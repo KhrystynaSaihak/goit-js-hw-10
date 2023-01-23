@@ -23,7 +23,6 @@ const renderCountriesToHtml = data => {
     return;
   } else if (data.length > 1 && data.length <= 10) {
     data.map(country => {
-      console.log(country);
       renderData += `<li><img src="${country.flags.svg}" alt="flag of ${country.name.official}"><span>${country.name.official}</span></li>`;
     });
 

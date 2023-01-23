@@ -11,8 +11,6 @@ export default class CounriesApiServer {
     const url = `https://restcountries.com/v3.1/name/${this.searchQuery}?fields=name,capital,population,flags,languages`;
     return fetch(url)
       .then(response => {
-        console.log(response.ok);
-        console.log(response);
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
