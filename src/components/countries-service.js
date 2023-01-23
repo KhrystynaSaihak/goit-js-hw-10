@@ -10,16 +10,16 @@ export default class CounriesApiServer {
   fetchCountries() {
     const url = `https://restcountries.com/v3.1/name/${this.searchQuery}?fields=name,capital,population,flags,languages`;
     return fetch(url)
-      .then(r => r.json())
-      .then(data => {
-        if (data.status === 404) {
-          Promise.reject(data);
-          throw new Error(this.errorText);
-        } else {
-          return data;
+      .then(response => {
+        console.log(response.ok);
+        console.log(response);
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
         }
+        return response.json();
       })
       .catch(error => {
+        console.log(error);
         Notify.failure(this.errorText);
       });
   }
