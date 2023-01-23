@@ -12,31 +12,32 @@ const refs = {
   countryInfo: document.querySelector('.country-info'),
 };
 
+const messages = {
+  error: 'Oops, there is no country with that name',
+  notify: 'Too many matches found. Please enter a more specific name.',
+};
+
 const counriesApiServer = new CounriesApiServer();
 
-const renderCountriesToHtml = data => {
+const markupForManyCountries = data => {
   let renderData = '';
-  refs.countriesList.innerHTML = '';
-  refs.countryInfo.innerHTML = '';
-  if (data.length > 10) {
-    Notify.info('Too many matches found. Please enter a more specific name.');
-    return;
-  } else if (data.length > 1 && data.length <= 10) {
-    data.map(country => {
-      renderData += `<li><img src="${country.flags.svg}" alt="flag of ${country.name.official}"><span>${country.name.official}</span></li>`;
-    });
+  data.map(country => {
+    renderData += `<li><img src="${country.flags.svg}" alt="flag of ${country.name.official}"><span>${country.name.official}</span></li>`;
+  });
+  return renderData;
+};
 
-    refs.countriesList.innerHTML = renderData;
-  } else {
-    let languages = '';
-    for (const lang in data[0].languages) {
-      languages += data[0].languages[lang] + ', ';
-    }
-    renderData = `
+const markupForOneCountry = data => {
+  let renderData = '';
+  let languages = '';
+  for (const lang in data[0].languages) {
+    languages += data[0].languages[lang] + ', ';
+  }
+  renderData = `
     <div class="country-info--header">
   <img class="country-info--flag" src="${data[0].flags.svg}" alt="flag of ${
-      data[0].name.official
-    }" />
+    data[0].name.official
+  }" />
   <h1 class="country-info--name">${data[0].name.official}</h1>
   </div>
   <ul class="country-info--description-list">
@@ -52,7 +53,19 @@ const renderCountriesToHtml = data => {
     )}</li>
   </ul>
 `;
-    refs.countryInfo.innerHTML = renderData;
+  return renderData;
+};
+
+const renderCountriesToHtml = data => {
+  refs.countriesList.innerHTML = '';
+  refs.countryInfo.innerHTML = '';
+  if (data.length > 10) {
+    Notify.info(messages.notify);
+    return;
+  } else if (data.length > 1 && data.length <= 10) {
+    refs.countriesList.innerHTML = markupForManyCountries(data);
+  } else {
+    refs.countryInfo.innerHTML = markupForOneCountry(data);
   }
 };
 
@@ -65,7 +78,10 @@ const onTypeCountry = e => {
   counriesApiServer
     .fetchCountries()
     .then(data => renderCountriesToHtml(data))
-    .catch(error => {});
+    .catch(error => {
+      console.log(error);
+      Notify.failure(messages.error);
+    });
 };
 
 const debounceFun = debounce(onTypeCountry, DEBOUNCE_DELAY);
