@@ -80,6 +80,8 @@ const onTypeCountry = e => {
     .then(data => renderCountriesToHtml(data))
     .catch(error => {
       console.log(error);
+      refs.countriesList.innerHTML = '';
+      refs.countryInfo.innerHTML = '';
       Notify.failure(messages.error);
     });
 };
